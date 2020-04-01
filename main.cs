@@ -12,7 +12,7 @@ public class Program {
 
 
     Console.WriteLine("");
-    Console.WriteLine("Podaj wysokość planszy:");
+    /*Console.WriteLine("Podaj wysokość planszy:");
     int height = Convert.ToInt32(Console.ReadLine());
     Console.WriteLine("Podaj szerokość planszy:");
     int width = Convert.ToInt32(Console.ReadLine());
@@ -20,10 +20,12 @@ public class Program {
     Console.WriteLine("Czy generować losowo ściany w trakcie gry? \n" +
     "Wpisz \"tak\" lub cokolwiek innego, jeśli nie, i naciśnij Enter:");
     string generateWallsInput = Console.ReadLine();
-    Boolean generateWalls = false;
     if(generateWallsInput == "tak"){
       generateWalls = true;
-    }
+    }*/
+    Boolean generateWalls = true;
+    int height = 30;
+    int width = 50;
 
     string[,] map = new string[height, width];
     
@@ -34,11 +36,7 @@ public class Program {
         if(generateWalls){
           Random random = new Random();
           if(random.NextDouble() < wallProbability){
-            if(Convert.ToBoolean(random.Next(0, 2))){
-              map[i,j] = "|";
-            } else {
-              map[i,j] = "_";
-            }
+              map[i,j] = "█";
           } else {
             map[i,j] = ".";
           }
@@ -51,6 +49,7 @@ public class Program {
     map[playerPosition.Item1, playerPosition.Item2] = "P";
     printWholeMap(map);
 
+    DateTime startDate = DateTime.Now;
     while(true){
       printWholeMap(map);
       ConsoleKeyInfo klawisz = Console.ReadKey(true);
@@ -69,7 +68,23 @@ public class Program {
       } else if (klawisz.Key == ConsoleKey.D){
         playerPosition = moveRight(playerPosition, 1, map);
       }
+      if(checkIfWon(playerPosition, map)){
+        Console.WriteLine("Gratulacje wygranej!");
+        break;
+      }
     }
+    DateTime endDate = DateTime.Now;
+    Console.WriteLine("Wyjście z labiryntu zajęło Ci " + (endDate - startDate).TotalSeconds + " sekund!");
+  }
+
+  public static Boolean checkIfWon(Tuple<int, int> playerPosition,string[,] map){
+    if(playerPosition.Item1 <= 0 || playerPosition.Item1 >= map.GetLength(0)-1){
+      return true;
+    }
+    if(playerPosition.Item2 <= 0 || playerPosition.Item2 >= map.GetLength(1)-1){
+      return true;
+    }
+    return false;
   }
 
   public static void printWholeMap(string[,] mapToPrint){
